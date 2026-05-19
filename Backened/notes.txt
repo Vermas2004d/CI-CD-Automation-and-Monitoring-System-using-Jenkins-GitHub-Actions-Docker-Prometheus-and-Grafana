@@ -1,0 +1,10 @@
+//routes
+//unsecured routes
+register ok done , login ok done , verify-email/:verificationToken ok done, refreshtoken ok, , forgot-password ok done, reset-password/:resetToken ok done,
+//we have completed all the unsecured routes//
+
+
+//secured Token 
+logout ok done, current-user ok done , change-password ok , resend-email-verification ok done
+
+ 
