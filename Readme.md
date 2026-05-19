@@ -39,20 +39,31 @@ This application features a fully automated, production-grade DevOps pipeline:
 Create `.env` files from provided samples/notes.
 
 **Frontend (Frontened/Railway/.env)**
-- `VITE_API_URL`, `VITE_API_BASE_URL`, `VITE_NOTIFICATION_API_URL`
+- `VITE_API_URL` (e.g. `http://localhost:8000/api/v1/auth`)
+- `VITE_API_BASE_URL`
+- `VITE_NOTIFICATION_API_URL`
 - `VITE_RAPID_API_KEY`
 - `VITE_CLOUDINARY_CLOUD_NAME`, `VITE_CLOUDINARY_UPLOAD_PRESET`
 
 **Backend (Backened/.env)**
-- `PORT`
+- `PORT=8000`
 - `MONGO_URI`
-- `CORS_ORIGIN` (comma list, e.g. http://localhost:5173)
-- `CLIENT_URL`, `FORGOT_PASSWORD_REDIRECT_URL`
+- `CORS_ORIGIN` (For Docker: `http://localhost`)
+- `CLIENT_URL` (For Docker: `http://localhost`)
+- `FORGOT_PASSWORD_REDIRECT_URL` (For Docker: `http://localhost/reset-password`)
 - `ACCESS_TOKEN_SECRET`, `ACCESS_TOKEN_EXPIRY`
 - `REFRESH_TOKEN_SECRET`, `REFRESH_TOKEN_EXPIRY`
 - `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`
 - `MAILTRAP_SMTP_HOST`, `MAILTRAP_SMTP_PORT`, `MAILTRAP_SMTP_USER`, `MAILTRAP_SMTP_PASS`, `EMAIL_USER`
 - `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`
+
+### Jenkins Configuration Requirements
+If running the `Jenkinsfile` on an EC2 instance or external server, you must securely inject the `.env` files using Jenkins Credentials:
+1. Go to **Manage Jenkins** -> **Credentials**.
+2. Add two **Secret file** credentials:
+   - Upload `Backened/.env` and set ID to `backend-env-file`
+   - Upload `Frontened/Railway/.env` and set ID to `frontend-env-file`
+3. The Jenkins pipeline uses `withCredentials` to securely copy these files into the workspace before running `docker-compose`.
 
 ### Run Locally (Docker - Recommended)
 The fastest way to spin up the entire application along with the monitoring tools is via Docker Compose.
@@ -101,3 +112,4 @@ The fastest way to spin up the entire application along with the monitoring tool
 - Mail setup defaults to Mailtrap for development; adjust SMTP for production.
 - Project history: first repository (with original commits) was deleted due to an issue; this is a recreated repo. Estimated effort to rebuild and complete: ~19 days.
 - Special thanks to Madhav Verma for contributions.
+
