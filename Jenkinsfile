@@ -1,16 +1,27 @@
 pipeline {
-    agent any  
+    agent any
 
     environment {
         COMPOSE_PROJECT_NAME = "railway_app"
     }
 
-    
-    stages {         
-        stage('Checkout') { 
+    stages {
+        stage('Checkout') {
             steps {
-                // Checkout code from Git
                 checkout scm
+            }
+        }
+
+        stage('Inject Environment Variables') {
+            steps {
+                // This grabs the secret files from Jenkins and places them in the workspace
+                withCredentials([
+                    file(credentialsId: 'backend-env-file', variable: 'BACKEND_ENV'),
+                    file(credentialsId: 'frontend-env-file', variable: 'FRONTEND_ENV')
+                ]) {
+                    sh 'cp $BACKEND_ENV Backened/.env'
+                    sh 'cp $FRONTEND_ENV Frontened/Railway/.env'
+                }
             }
         }
 
@@ -27,24 +38,10 @@ pipeline {
             steps {
                 script {
                     echo "Deploying the stack..."
-                    // Shut down previous stack if running
                     sh 'docker-compose down'
-                    // Start new stack
                     sh 'docker-compose up -d'
                 }
             }
-        }
-    }
-
-    post {
-        always {
-            echo 'Pipeline finished.'
-        }
-        success {
-            echo 'Deployment successful.'
-        }
-        failure {
-            echo 'Deployment failed.'
         }
     }
 }
