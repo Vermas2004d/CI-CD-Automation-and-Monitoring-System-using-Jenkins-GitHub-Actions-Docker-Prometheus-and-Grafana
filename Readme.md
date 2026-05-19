@@ -6,10 +6,12 @@ End-to-end railway experience with separate frontend (React/Vite) and backend (E
 For more details, images, and videos of how the platform works, visit: [Project Documentation](https://www.notion.so/POST-LINK-2d19aac96f178057a63ce93fc673210e)
 
 ### Architecture
-- Frontend: React 19 + Vite, React Router 7, Tailwind 4, axios, sonner toasts, lucide-react icons.
-- Backend: Express 5, Mongoose 8, JWT auth + Passport Google OAuth2, Razorpay payments, Mailgen/Nodemailer for email flows.
-- Database: MongoDB (MONGO_URI).
-- Cloud/media: Cloudinary avatar uploads (widget used on frontend, URLs stored via backend update).
+- **Frontend**: React 19 + Vite, React Router 7, Tailwind 4, axios, sonner toasts, lucide-react icons.
+- **Backend**: Express 5, Mongoose 8, JWT auth + Passport Google OAuth2, Razorpay payments, Mailgen/Nodemailer for email flows.
+- **Database**: MongoDB (MONGO_URI).
+- **Cloud/media**: Cloudinary avatar uploads (widget used on frontend, URLs stored via backend update).
+- **Infrastructure (DevOps)**: Docker containers, Docker Compose orchestration, Jenkins CD, GitHub Actions CI.
+- **Monitoring**: Prometheus (metrics scraping) and Grafana (visual dashboards).
 
 ### Key Features
 - Landing and discovery: animated hero, train search handoff, tours and luxury journeys showcase.
@@ -21,8 +23,17 @@ For more details, images, and videos of how the platform works, visit: [Project 
 - Dashboard hub: sidebar navigation to tickets, tatkal, PNR, seat, route, services, food, tours, royal, history, notifications, help, profile.
 
 ### Repos & Paths
-- Frontend app: Frontened/Railway
-- Backend API: Backened
+- **Frontend app**: `Frontened/Railway`
+- **Backend API**: `Backened`
+- **Monitoring**: `monitoring/prometheus` & `monitoring/grafana`
+- **CI/CD**: `Jenkinsfile` & `.github/workflows/ci.yml`
+
+### DevOps & Monitoring Ecosystem
+This application features a fully automated, production-grade DevOps pipeline:
+- **Dockerization**: The frontend (Vite/Nginx) and backend (Node.js) are containerized using custom `Dockerfile`s and orchestrated seamlessly using `docker-compose.yml`.
+- **Continuous Integration (CI)**: Configured with **GitHub Actions** (`ci.yml`) to automatically build and test Docker images upon every push/pull request to the `main` branch.
+- **Continuous Deployment (CD)**: Managed by **Jenkins** (`Jenkinsfile`). It securely fetches `.env` credentials, pulls the latest code, and re-deploys the live Docker Compose stack with zero manual intervention.
+- **Monitoring**: **Prometheus** continuously scrapes live system metrics from the backend's `/metrics` endpoint. **Grafana** (pre-provisioned via `datasource.yml`) visualizes this data on port `3001`.
 
 ### Environment Variables
 Create `.env` files from provided samples/notes.
@@ -43,13 +54,27 @@ Create `.env` files from provided samples/notes.
 - `MAILTRAP_SMTP_HOST`, `MAILTRAP_SMTP_PORT`, `MAILTRAP_SMTP_USER`, `MAILTRAP_SMTP_PASS`, `EMAIL_USER`
 - `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`
 
-### Run Locally
-1) Backend
+### Run Locally (Docker - Recommended)
+The fastest way to spin up the entire application along with the monitoring tools is via Docker Compose.
+1. Make sure Docker Desktop is installed and running.
+2. Ensure you have created the `.env` files for both the Backend and Frontend as described above.
+3. Open your terminal in the root directory and run:
+   ```bash
+   docker-compose up -d --build
+   ```
+4. Access the services:
+   - **Frontend Application**: `http://localhost`
+   - **Backend API**: `http://localhost:8000`
+   - **Prometheus**: `http://localhost:9090`
+   - **Grafana**: `http://localhost:3001` (Credentials: admin / admin)
+
+### Run Locally (Manual)
+1) **Backend**
 	- `cd Backened`
 	- `npm install`
 	- Add `.env` with keys above and ensure MongoDB reachable
 	- `npm run dev`
-2) Frontend
+2) **Frontend**
 	- In new shell: `cd Frontened/Railway`
 	- `npm install`
 	- Copy `.env.sample` to `.env`, set real values

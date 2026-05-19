@@ -1,12 +1,13 @@
 pipeline {
-    agent any
+    agent any  
 
     environment {
         COMPOSE_PROJECT_NAME = "railway_app"
     }
 
-    stages {
-        stage('Checkout') {
+    
+    stages {         
+        stage('Checkout') { 
             steps {
                 // Checkout code from Git
                 checkout scm
