@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import passport from "passport";
+import promClient from "prom-client";
+
 import "./passport/index.js"; //this executes the strategy configuration
 import authRouter from "./routes/auth.routes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
@@ -9,6 +11,9 @@ import notificationRoutes from "./routes/notificationRoutes.js";
 import bookingRoutes from './routes/bookingRoutes.js'
 
 const app = express();
+
+// Initialize Prometheus default metrics
+promClient.collectDefaultMetrics({ register: promClient.register });
 
 //basic configuration
 app.use(express.json({ limit: "16kb" })); //used to get the json data
@@ -34,6 +39,15 @@ app.use("/api/v1/payments", paymentRoutes);
 app.use("/api/v1/notifications", notificationRoutes);
 app.use("/api/v1/bookings", bookingRoutes);
 
+
+app.get("/metrics", async (req, res) => {
+  res.set("Content-Type", promClient.register.contentType);
+  try {
+    res.send(await promClient.register.metrics());
+  } catch (ex) {
+    res.status(500).end(ex);
+  }
+});
 
 app.get("/", (req, res) => {
   res.send("Welcome to the base campy");
