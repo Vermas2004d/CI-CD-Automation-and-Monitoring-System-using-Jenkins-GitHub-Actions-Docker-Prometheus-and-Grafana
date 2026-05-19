@@ -5,10 +5,6 @@ End-to-end railway experience with separate frontend (React/Vite) and backend (E
 ### Demo 
 For more details, images, and videos of how the platform works, visit: [Project Documentation](https://www.notion.so/POST-LINK-2d19aac96f178057a63ce93fc673210e)
 
-### People
-- Project owner: Arpit Kumar
-- Contributor: Madhav Verma
-
 ### Architecture
 - Frontend: React 19 + Vite, React Router 7, Tailwind 4, axios, sonner toasts, lucide-react icons.
 - Backend: Express 5, Mongoose 8, JWT auth + Passport Google OAuth2, Razorpay payments, Mailgen/Nodemailer for email flows.
