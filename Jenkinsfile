@@ -2,13 +2,13 @@ pipeline {
     agent any
     environment {
         COMPOSE_PROJECT_NAME = "railway_app"
+        DOCKER_BUILDKIT = "1"
+        COMPOSE_DOCKER_CLI_BUILD = "1"
     }
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
-                // Fix ownership of workspace files left by Docker (runs as root)
-                // This prevents Permission Denied on all future cp/write operations
                 sh 'sudo chown -R $(id -u):$(id -g) .'
             }
         }
@@ -52,3 +52,4 @@ pipeline {
         }
     }
 }
+
