@@ -1,14 +1,15 @@
 pipeline {
     agent any
-
     environment {
         COMPOSE_PROJECT_NAME = "railway_app"
     }
-
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
+                // Fix ownership of workspace files left by Docker (runs as root)
+                // This prevents Permission Denied on all future cp/write operations
+                sh 'sudo chown -R $(id -u):$(id -g) .'
             }
         }
 
@@ -18,8 +19,7 @@ pipeline {
                     file(credentialsId: 'backend-env-file', variable: 'BACKEND_ENV'),
                     file(credentialsId: 'frontend-env-file', variable: 'FRONTEND_ENV')
                 ]) {
-                    // Copy secret files to the actual paths docker-compose expects
-                    // Must happen INSIDE withCredentials — files are deleted after block ends
+                    sh 'chmod u+w ./Backened ./Frontened/Railway'
                     sh 'cp "$BACKEND_ENV"  ./Backened/.env'
                     sh 'cp "$FRONTEND_ENV" ./Frontened/Railway/.env'
                 }
@@ -47,8 +47,7 @@ pipeline {
     }
 
     post {
-        always { 
-            // Clean up sensitive .env files from workspace after every run
+        always {
             sh 'rm -f ./Backened/.env ./Frontened/Railway/.env'
         }
     }
