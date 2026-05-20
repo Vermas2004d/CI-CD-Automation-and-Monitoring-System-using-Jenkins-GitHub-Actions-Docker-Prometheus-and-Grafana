@@ -14,15 +14,14 @@ pipeline {
 
         stage('Inject Environment Variables') {
             steps {
-                // This grabs the secret files from Jenkins
                 withCredentials([
                     file(credentialsId: 'backend-env-file', variable: 'BACKEND_ENV'),
                     file(credentialsId: 'frontend-env-file', variable: 'FRONTEND_ENV')
                 ]) {
-                    // Bypass the folder permission error by modifying docker-compose.yml 
-                    // to read directly from the Jenkins temporary secret file paths!
-                    sh "sed -i \"s|./Backened/.env|\\$BACKEND_ENV|g\" docker-compose.yml"
-                    sh "sed -i \"s|./Frontened/Railway/.env|\\$FRONTEND_ENV|g\" docker-compose.yml"
+                    // Copy secret files to the actual paths docker-compose expects
+                    // Must happen INSIDE withCredentials — files are deleted after block ends
+                    sh 'cp "$BACKEND_ENV"  ./Backened/.env'
+                    sh 'cp "$FRONTEND_ENV" ./Frontened/Railway/.env'
                 }
             }
         }
@@ -44,6 +43,13 @@ pipeline {
                     sh 'docker-compose up -d'
                 }
             }
+        }
+    }
+
+    post {
+        always { 
+            // Clean up sensitive .env files from workspace after every run
+            sh 'rm -f ./Backened/.env ./Frontened/Railway/.env'
         }
     }
 }
